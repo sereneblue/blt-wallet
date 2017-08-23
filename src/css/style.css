@@ -1,0 +1,150 @@
+@media only screen and (min-width: 501px) {
+	table {
+		padding: 2% 5% 0 5%;
+	}
+
+	.dropdown {
+		text-align: center !important;
+	}
+
+	.price > h1 {
+		font-size: 4em;
+		margin-bottom: 0;
+	}
+
+	.price > h2 {
+		color: rgba(255, 255, 255, 0.7);
+		margin-top: 0;
+		font-size: 2em;
+	}
+
+	.pusher {
+		padding-left: 18em;
+	}
+
+	#horizontal {
+		display: none;
+	}
+
+	#price-header {
+		height: 35vh;
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		text-align: center;
+	}
+
+	#sidebar {
+		display: block;
+		width: 18em !important;
+	}
+
+	#transactions > h2 {
+		padding-top: 1em;
+		text-align: center;
+	}
+}
+
+@media only screen and (min-device-width : 501px) {
+	table {
+		padding: 2% 5% 0 5%;
+	}
+
+	.dropdown {
+		text-align: center !important;
+	}
+
+	.price > h1 {
+		font-size: 4em;
+		margin-bottom: 0;
+	}
+
+	.price > h2 {
+		color: rgba(255, 255, 255, 0.7);
+		margin-top: 0;
+		font-size: 2em;
+	}
+
+	.pusher {
+		padding-left: 18em;
+	}
+
+	#horizontal {
+		display: none;
+	}
+
+	#price-header {
+		height: 35vh;
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		text-align: center;
+	}
+
+	#sidebar {
+		display: block;
+		width: 18em !important;
+	}
+
+	#transactions > h2 {
+		padding-top: 1em;
+		text-align: center;
+	}
+}
+@media screen and (max-width: 500px) {
+	.pusher {
+		padding-left: 0px;
+	}
+
+	#price-header {
+		height: 35vh;
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		text-align: center;
+	}
+
+	#horizontal {
+		display: block;
+		border-radius: 0px !important;
+		margin: 0 auto;
+	}
+
+	#horizontal .header {
+		margin: 0 !important;
+		padding-right: .5em;
+	}
+
+	#sidebar {
+		display: none !important;
+	}
+}
+
+@media screen and (max-device-width: 500px) {
+	.pusher {
+		padding-left: 0px;
+	}
+
+	#price-header {
+		height: 35vh;
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		text-align: center;
+	}
+
+	#horizontal {
+		display: block;
+		border-radius: 0px !important;
+		margin: 0 auto;
+	}
+
+	#horizontal .header {
+		margin: 0 !important;
+		padding-right: .5em;
+	}
+
+	#sidebar {
+		display: none !important;
+	}
+}

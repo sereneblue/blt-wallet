@@ -86,7 +86,7 @@ let app = new Vue({
 		},
 		getOutputValue: function (vouts) {
 			for (var i = 0; i < vouts.length; i++) {
-				if (vouts[i].scriptPubKey.addresses[0] == app.address) return vouts[1].value;
+				if (vouts[i].scriptPubKey.addresses[0] == app.address) return vouts[i].value;
 			}
 		},
 		getUnspentTransactions: function (send_amount, tx, keyPair) {

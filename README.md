@@ -8,7 +8,7 @@ If you'd like to see blt-wallet in action, click [here](https://sereneblue.githu
 
 ## Special Thanks
 
-* Bitpay and Litecore for the Insight API
+- Bitpay and Litecore for the Insight API
 - cryptocompare.com for the prices
 - BLT Wallet icon from Clipart Library, http://clipart-library.com/clipart/zcXeXaX9i.htm
 - Corsica_S for the ding audio sound, https://freesound.org/people/Corsica_S/sounds/91926/

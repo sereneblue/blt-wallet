@@ -8,7 +8,7 @@ let app = new Vue({
 			amount: 0,
 			color: "orange",
 			faucets: [
-				["TP", "https://testnet.manu.backend.hamburg/faucet"],
+				["qc.to", "https://testnet.qc.to/"],
 				["nkuttler", "https://kuttler.eu/en/bitcoin/btc/faucet/"],
 				["flyingkiwi", "https://testnet.manu.backend.hamburg/faucet"],
 				["coinfaucet", "https://testnet.coinfaucet.eu/en/"]

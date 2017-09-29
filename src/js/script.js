@@ -213,7 +213,7 @@ function createNewAddress(network) {
 }
 
 function maxAmount() {
-	if (parseFloat($('#send-amount')[0].value) > .001) {
+	if (app[app.current].amount > .001) {
 		$('#send-amount')[0].value = (app[app.current].amount - .001).toFixed(8);
 	} else {
 		app.msg.status = "negative";

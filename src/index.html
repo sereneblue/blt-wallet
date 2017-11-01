@@ -27,10 +27,10 @@
             </div>
             <div class="item">
                 <div class="four ui buttons">
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="top left" onclick="app.init(app.current)">
+                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="top left" @click="app.init(app.current)">
                         <i class="plus icon"></i>
                     </button>
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Switch Currency" onclick="switchCurrency();">
+                    <button :class="color" class="ui basic small icon button" data-tooltip="Switch Currency" @click="switchCurrency();">
                         <i class="exchange icon"></i>
                     </button>
                     <button :class="color" class="ui basic top left pointing small dropdown icon button" data-tooltip="Change Fiat Currency">
@@ -40,7 +40,7 @@
                             <div class="header">
                                 Fiat
                             </div>
-                            <div class="item" v-for="symbol, code in currencies" v-on:click="updateFiat(code)">
+                            <div class="item" v-for="symbol, code in currencies" @click="updateFiat(code)">
                                 {{ symbol }} {{ code }}
                             </div>
                         </div>
@@ -53,18 +53,18 @@
             <div class="item">
                 Need some testnet coins?
             </div>
-            <a class="item" v-bind:href="faucet[1]" v-for="faucet in faucets" target="_blank">
-				{{ faucet[0] }}
-			</a>
+            <a class="item" :href="faucet[1]" v-for="faucet in faucets" target="_blank">
+                {{ faucet[0] }}
+            </a>
         </div>
         <div id="horizontal" class="ui inverted menu">
             <div class="item">
                 <div class="ui inverted header">BLT Wallet</div>
                 <div class="ui four buttons">
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="bottom left" onclick="app.init(app.current)">
+                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="bottom left" @click="app.init(app.current)">
                         <i class="plus icon"></i>
                     </button>
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Switch Currency" data-position="bottom left" onclick="switchCurrency();">
+                    <button :class="color" class="ui basic small icon button" data-tooltip="Switch Currency" data-position="bottom left" @click="switchCurrency();">
                         <i class="exchange icon"></i>
                     </button>
                     <button :class="color" class="ui basic top left pointing small dropdown icon button" data-tooltip="Change Fiat Currency" data-position="bottom left">
@@ -74,7 +74,7 @@
                             <div class="header">
                                 Fiat
                             </div>
-                            <div class="item" v-for="symbol, code in currencies" v-on:click="updateFiat(code)">
+                            <div class="item" v-for="symbol, code in currencies" @click="updateFiat(code)">
                                 {{ symbol }} {{ code }}
                             </div>
                         </div>
@@ -86,7 +86,7 @@
                             <div class="header">
                                 Faucets
                             </div>
-                            <div class="item" v-bind:href="faucet[1]" v-for="faucet in faucets" target="_blank">
+                            <div class="item" :href="faucet[1]" v-for="faucet in faucets" target="_blank">
                                 {{ faucet[0] }}
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                 <div class="price">
                     <h1>{{ amount }}</h1>
                     <h2>{{ fiat_amount }}</h2>
-                    <button :class="color" class="ui button" onclick="showModal()">
+                    <button :class="color" class="ui button" @click="showModal()">
                         <i class="send outline icon"></i>
                         Send
                     </button>
@@ -122,50 +122,50 @@
                             <td v-if="tx.vin[0].addr == app.address">
                                 <i class="medium circular inverted red arrow right icon"></i>
                                 <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
-			      </td>
-			      <td v-else>
-			      	<i class="medium circular inverted green arrow left icon"></i>
-                                <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
-			      </td>
-			      <td><span v-bind:data-livestamp="tx.time"></span></td>
-			      <td><a v-bind:href="app.baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
-			      <td v-if="tx.vin[0].addr == app.address" class="negative">-{{ tx.vout[0].value }} {{ symbol }}</td>
-			      <td v-else class="positive">+{{ app.getOutputValue(tx.vout) }} {{ symbol }}</td>
-			    </tr>
-			  </tbody>
-			</table>
-			</div>
-			<audio id="audio" src="resources/ding.wav" preload="auto"></audio>
-		</div>
-		<div class="ui modal">
-			<div class="header">Send Coins</div>
-			<div class="content">
-				<div class="ui form">
-			  		<div class="field">
-					<label>Amount (A .001 miner fee is deducted from your balance)</label>
-					<div class="ui action input">
-					  <input id="send-amount" placeholder="Amount..." type="number">
-					  <button class="ui button" onclick="maxAmount()">Max Amount</button>
-					</div>
-					</div>
-					<div class="field">
-					<label>Recipient Address</label>
-					<input id="receive-address" placeholder="Address" type="text">
-					</div>
-					<button :class="color" class="ui button" id="send-button" onclick="sendTransaction();">
-					  Send
-					</button>
-					<button class="ui deny button" onclick="$('.modal').modal('hide');">
-					  Cancel
-					</button>
-					<div v-if="msg.title" v-bind:class="msg.status" class="ui message">
-						<div class="header">{{ msg.title }}</div>
-					  	<p>{{ msg.reason }}</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                            </td>
+                            <td v-else>
+                                <i class="medium circular inverted green arrow left icon"></i>
+                                            <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
+                              </td>
+                              <td><span v-bind:data-livestamp="tx.time"></span></td>
+                              <td><a v-bind:href="app.baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
+                              <td v-if="tx.vin[0].addr == app.address" class="negative">-{{ tx.vout[0].value }} {{ symbol }}</td>
+                              <td v-else class="positive">+{{ app.getOutputValue(tx.vout) }} {{ symbol }}</td>
+                        </tr>
+                  </tbody>
+            </table>
+            </div>
+            <audio id="audio" src="resources/ding.wav" preload="auto"></audio>
+        </div>
+        <div class="ui modal">
+            <div class="header">Send Coins</div>
+            <div class="content">
+                <div class="ui form">
+                    <div class="field">
+                    <label>Amount (A .001 miner fee is deducted from your balance)</label>
+                    <div class="ui action input">
+                      <input id="send-amount" placeholder="Amount..." type="number">
+                      <button class="ui button" @click="maxAmount()">Max Amount</button>
+                    </div>
+                    </div>
+                    <div class="field">
+                    <label>Recipient Address</label>
+                    <input id="receive-address" placeholder="Address" type="text">
+                    </div>
+                    <button :class="color" class="ui button" id="send-button" onclick="sendTransaction();">
+                      Send
+                    </button>
+                    <button class="ui deny button" onclick="$('.modal').modal('hide');">
+                      Cancel
+                    </button>
+                    <div v-if="msg.title" :class="msg.status" class="ui message">
+                        <div class="header">{{ msg.title }}</div>
+                        <p>{{ msg.reason }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 <script src="js/vue.min.js"></script>
 <script src="js/script.js"></script>

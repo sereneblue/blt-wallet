@@ -1,4 +1,4 @@
-let app = new Vue({
+var app = new Vue({
 	el: "#app",
 	data: {
 		current: "bitcoin",
@@ -48,13 +48,13 @@ let app = new Vue({
 	},
 	methods: {
 		init: function (net) {
-			let keys = createNewAddress(net);
+			var keys = createNewAddress(net);
 			window.location.hash = "#" + net[0] + "-" + rot13(keys[0]) + "-USD";
 			window.location.reload();
 		},
 		buildTransaction: function (send_amount, recipient_address, inputs, tx, keyPair) {
-			let spend_amount = 0.0;
-			let num_inputs = 0;
+			var spend_amount = 0.0;
+			var num_inputs = 0;
 			const fee = .001;
 
 			inputs.sort(function (a, b) { return parseFloat(a.value) - parseFloat(b.value) });
@@ -68,14 +68,14 @@ let app = new Vue({
 			    }
 			});
 
-			// check if there is enough balance
+			// check if there is enough balancekm
 			if (spend_amount < send_amount + fee) {
-				app.msg.status = "negative";
-				app.msg.title = "Not enough coins in wallet.";
-				app.msg.reason = "Try sending some more coins to this wallet. :)";
+				this.msg.status = "negative";
+				this.msg.title = "Not enough coins in wallet.";
+				this.msg.reason = "Try sending some more coins to this wallet. :)";
 			} else {
 				tx.addOutput(recipient_address, send_amount * 100000000);
-			    tx.addOutput(app[app.current].address, parseFloat(((spend_amount - send_amount - fee) * 100000000).toFixed(0)));
+			    tx.addOutput(this[this.current].address, parseFloat(((spend_amount - send_amount - fee) * 100000000).toFixed(0)));
 
 			    for (var i = 0; i < num_inputs; i++) {
 			    	tx.sign(i, keyPair);
@@ -84,16 +84,46 @@ let app = new Vue({
 
 	        return tx.buildIncomplete().toHex();
 		},
+		checkKey: function (priv_key) {
+			var keyPair = blt.ECPair.fromWIF(
+					priv_key,
+					(this.current == "bitcoin") ? blt.networks.testnet : blt.networks.ltestnet
+				);
+			var address = keyPair.getAddress();
+
+			if (window.location.hash[1] == "b") {
+				if (isValidAddress(address, 'bitcoin')) {
+					this.bitcoin.address = address;
+					this.current = "bitcoin";
+					return true;
+				}
+			} else if (window.location.hash[1] == "l") {
+				if (isValidAddress(address, 'litecoin')) {
+					this.litecoin.address = address;
+					this.current = "litecoin";
+					return true;
+				}
+			}
+		},
 		getOutputValue: function (vouts) {
 			for (var i = 0; i < vouts.length; i++) {
-				if (vouts[i].scriptPubKey.addresses[0] == app.address) return vouts[i].value;
+				if (vouts[i].scriptPubKey.addresses[0] == this.address) return vouts[i].value;
 			}
 		},
 		getUnspentTransactions: function (send_amount, tx, keyPair) {
-			return $.get(app.baseURL + "/api/addr/" + app.address + "/utxo");
+			return $.get(this.baseURL + "/api/addr/" + this.address + "/utxo");
+		},
+		maxAmount: function () {
+			if (this[this.current].amount > .001) {
+				$('#send-amount')[0].value = (this[this.current].amount - .001).toFixed(8);
+			} else {
+				this.msg.status = "negative";
+				this.msg.title = "Not enough coins in wallet.";
+				this.msg.reason = "Try sending some more coins to this wallet. :)";
+			}
 		},
 		sendTx: function (hex) {
-			$.post(app.baseURL + "/api/tx/send", {
+			return $.post(app.baseURL + "/api/tx/send", {
 			    rawtx : hex,
 			}).done(function(res) {
 				if (res.txid) {
@@ -106,6 +136,44 @@ let app = new Vue({
 					app.msg.reason = "Something went wrong. :(";
 				}
 			});
+		},
+		sendTransaction: function () {
+			var send_amount = parseFloat($('#send-amount')[0].value);
+			var recipient_address = $('#receive-address')[0].value;
+
+			// check for valid testnet address
+			if (isValidAddress(recipient_address, this.current)) {
+				if (this[this.current].amount > 0 && send_amount < this[this.current].amount) {
+					var keyPair = blt.ECPair.fromWIF(rot13(window.location.hash.match(/(b|l)\-([a-zA-Z0-9]+)(-([A-Z]{3}))?/)[2]),
+							this.current == "bitcoin" ? blt.networks.testnet : blt.networks.ltestnet
+						);
+				    var tx = new blt.TransactionBuilder(this.current == "bitcoin" ? blt.networks.testnet : blt.networks.ltestnet);
+
+				    app.getUnspentTransactions(send_amount, tx, keyPair)
+				    .done(function (res) {
+						var tx_hex = app.buildTransaction(send_amount, recipient_address, res, tx, keyPair);
+						return app.sendTx(tx_hex);
+					}).done(function () {
+						return app.updateData();
+					});
+			    } else {
+			    	this.msg.status = "negative";
+					this.msg.title = "Not enough coins in wallet.";
+					this.msg.reason = "Try sending some more coins to this wallet. :)";
+			    }
+			} else {
+				this.msg.status = "negative";
+				this.msg.title = "Address is not valid";
+				this.msg.reason = "This is not a valid address";
+			}
+		},
+		switchCurrency: function () {
+			this.init((this.current == "bitcoin") ? "litecoin" : "bitcoin");
+		},
+		updateData: function () {
+			if (app.address != "") {
+				app.updatePrices().then(app.updateTransactions);
+			}
 		},
 		updateFiat: function (currency) {
 			window.location.hash = window.location.hash.replace(/-[A-Z]{3}$/g, '-' + currency);
@@ -135,11 +203,6 @@ let app = new Vue({
 		            });
 		        }
 		    });
-		},
-		updateData: function () {
-			if (app.address != "") {
-				app.updatePrices().then(app.updateTransactions);
-			}
 		}
 	},
     computed: {
@@ -173,109 +236,46 @@ let app = new Vue({
 function isValidAddress(address, network) {
 	try {
 	    if (network == "bitcoin") {
-			return blt.bitcoin.address.toOutputScript(address, blt.bitcoin.networks.testnet);
+			return blt.address.toOutputScript(address, blt.networks.testnet);
 		} else {
-			return blt.bitcoin.address.toOutputScript(address, blt.bitcoin.networks.ltestnet);
+			return blt.address.toOutputScript(address, blt.networks.ltestnet);
 		}
 	} catch(err) {
 		return false;
 	}
 }
 
-function checkKey(priv_key) {
-	let keyPair = blt.bitcoin.ECPair.fromWIF(
-			priv_key,
-			(app.current == "bitcoin") ? blt.bitcoin.networks.testnet : blt.bitcoin.networks.ltestnet
-		);
-	let address = keyPair.getAddress();
-
-	if (window.location.hash[1] == "b") {
-		if (isValidAddress(address, 'bitcoin')) {
-			app.bitcoin.address = address;
-			app.current = "bitcoin";
-			return true;
-		}
-	} else if (window.location.hash[1] == "l") {
-		if (isValidAddress(address, 'litecoin')) {
-			app.litecoin.address = address;
-			app.current = "litecoin";
-			return true;
-		}
-	}
-}
-
 function createNewAddress(network) {
-    var network = network == "bitcoin" ? blt.bitcoin.networks.testnet : blt.bitcoin.networks.ltestnet;
-	var keyPair = blt.bitcoin.ECPair.makeRandom({ network: network });
+    var network = network == "bitcoin" ? blt.networks.testnet : blt.networks.ltestnet;
+	var keyPair = blt.ECPair.makeRandom({ network: network });
 	var pkey = keyPair.toWIF();
 	var address = keyPair.getAddress();
 	return [pkey, address];
-}
-
-function maxAmount() {
-	if (app[app.current].amount > .001) {
-		$('#send-amount')[0].value = (app[app.current].amount - .001).toFixed(8);
-	} else {
-		app.msg.status = "negative";
-		app.msg.title = "Not enough coins in wallet.";
-		app.msg.reason = "Try sending some more coins to this wallet. :)";
-	}
 }
 
 // rot13 implementation
 // https://stackoverflow.com/questions/617647/where-is-my-one-line-implementation-of-rot13-in-javascript-going-wrong
 function rot13(str) {
   return str.replace(/[a-zA-Z]/g, function(chr) {
-    let start = chr <= 'Z' ? 65 : 97;
+    var start = chr <= 'Z' ? 65 : 97;
     return String.fromCharCode(start + (chr.charCodeAt(0) - start + 13) % 26);
   });
-}
-
-function sendTransaction() {
-	let send_amount = parseFloat($('#send-amount')[0].value);
-	let recipient_address = $('#receive-address')[0].value;
-
-	// check for valid testnet address
-	if (isValidAddress(recipient_address, app.current)) {
-		if (app[app.current].amount > 0 && send_amount < app[app.current].amount) {
-			var keyPair = blt.bitcoin.ECPair.fromWIF(rot13(window.location.hash.match(/(b|l)\-([a-zA-Z0-9]+)(-([A-Z]{3}))?/)[2]),
-					app.current == "bitcoin" ? blt.bitcoin.networks.testnet : blt.bitcoin.networks.ltestnet
-				);
-		    var tx = new blt.bitcoin.TransactionBuilder(app.current == "bitcoin" ? blt.bitcoin.networks.testnet : blt.bitcoin.networks.ltestnet);
-
-	        Promise.resolve(app.getUnspentTransactions(send_amount, tx, keyPair))
-	        .then(res => app.buildTransaction(send_amount, recipient_address, res, tx, keyPair))
-	        .then(tx_hex => app.sendTx(tx_hex));
-	    } else {
-	    	app.msg.status = "negative";
-			app.msg.title = "Not enough coins in wallet.";
-			app.msg.reason = "Try sending some more coins to this wallet. :)";
-	    }
-	} else {
-		app.msg.status = "negative";
-		app.msg.title = "Address is not valid";
-		app.msg.reason = "This is not a valid address";
-	}
 }
 
 function showModal() {
 	$('.modal').modal('show');
 }
 
-function switchCurrency() {
-	app.init((app.current == "bitcoin") ? "litecoin" : "bitcoin");
-}
-
 $(document).ready(function() {
 	// check if valid wallet address
 	if (/(b|l)\-([a-zA-Z0-9]+)(-([A-Z]{3}))?/.test(window.location.hash)) {
 		// set currency
-		let user_currency = window.location.hash.match(/(b|l)\-([a-zA-Z0-9]+)(-([A-Z]{3}))?/)[4];
+		var user_currency = window.location.hash.match(/(b|l)\-([a-zA-Z0-9]+)(-([A-Z]{3}))?/)[4];
 		if (user_currency in app.currencies) {
 			app.currentFiat = user_currency;
 		}
 		try {
-		    if (checkKey(rot13(window.location.hash.match(/(b|l)\-([a-zA-Z0-9]+)(-([A-Z]{3}))?/)[2]))) {
+		    if (app.checkKey(rot13(window.location.hash.match(/(b|l)\-([a-zA-Z0-9]+)(-([A-Z]{3}))?/)[2]))) {
 				app.updateData();
 			}
 		} catch(err) {
@@ -285,5 +285,5 @@ $(document).ready(function() {
 		app.init('bitcoin');
 	};
 	$('.ui.dropdown').dropdown();
-	setInterval(app.updateData, 60 * 1000);
+	setInterval(app.updateData, 30 * 1000);
 });

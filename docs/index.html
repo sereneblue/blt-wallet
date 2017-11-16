@@ -25,7 +25,7 @@
             </div>
             <div class="item">
                 <div class="four ui buttons">
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="top left" @click="app.init(app.current)">
+                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="top left" @click="init(current)">
                         <i class="plus icon"></i>
                     </button>
                     <button :class="color" class="ui basic small icon button" data-tooltip="Switch Currency" @click="switchCurrency();">
@@ -59,7 +59,7 @@
             <div class="item">
                 <div class="ui inverted header">BLT Wallet</div>
                 <div class="ui four buttons">
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="bottom left" @click="app.init(app.current)">
+                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="bottom left" @click="init(current)">
                         <i class="plus icon"></i>
                     </button>
                     <button :class="color" class="ui basic small icon button" data-tooltip="Switch Currency" data-position="bottom left" @click="switchCurrency();">
@@ -117,7 +117,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="tx in transactions">
-                            <td v-if="tx.vin[0].addr == app.address">
+                            <td v-if="tx.vin[0].addr == address">
                                 <i class="medium circular inverted red arrow right icon"></i>
                                 <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
                             </td>
@@ -126,9 +126,9 @@
                                 <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
                             </td>
                             <td><span v-bind:data-livestamp="tx.time"></span></td>
-                            <td><a v-bind:href="app.baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
-                            <td v-if="tx.vin[0].addr == app.address" class="negative">-{{ tx.vout[0].value }} {{ symbol }}</td>
-                            <td v-else class="positive">+{{ app.getOutputValue(tx.vout) }} {{ symbol }}</td>
+                            <td><a v-bind:href="baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
+                            <td v-if="tx.vin[0].addr == address" class="negative">-{{ tx.vout[0].value }} {{ symbol }}</td>
+                            <td v-else class="positive">+{{ getOutputValue(tx.vout) }} {{ symbol }}</td>
                         </tr>
                   </tbody>
             </table>

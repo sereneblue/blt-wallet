@@ -21,7 +21,7 @@
             </div>
             <div class="item">
                 <strong>What is BLT wallet?</strong>
-                <br/>A web wallet for easy access to Bitcoin and Litecoin testnets. Please bookmark this URL if you want to access to the same wallet again.
+               <br/>A web wallet for easy access to Bitcoin and Litecoin testnets. Please bookmark this URL if you want to access the same wallet again.
             </div>
             <div class="item">
                 <div class="four ui buttons">
@@ -123,12 +123,12 @@
                             </td>
                             <td v-else>
                                 <i class="medium circular inverted green arrow left icon"></i>
-                                            <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
-                              </td>
-                              <td><span v-bind:data-livestamp="tx.time"></span></td>
-                              <td><a v-bind:href="app.baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
-                              <td v-if="tx.vin[0].addr == app.address" class="negative">-{{ tx.vout[0].value }} {{ symbol }}</td>
-                              <td v-else class="positive">+{{ app.getOutputValue(tx.vout) }} {{ symbol }}</td>
+                                <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
+                            </td>
+                            <td><span v-bind:data-livestamp="tx.time"></span></td>
+                            <td><a v-bind:href="app.baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
+                            <td v-if="tx.vin[0].addr == app.address" class="negative">-{{ tx.vout[0].value }} {{ symbol }}</td>
+                            <td v-else class="positive">+{{ app.getOutputValue(tx.vout) }} {{ symbol }}</td>
                         </tr>
                   </tbody>
             </table>
@@ -140,15 +140,15 @@
             <div class="content">
                 <div class="ui form">
                     <div class="field">
-                    <label>Amount (A .001 miner fee is deducted from your balance)</label>
-                    <div class="ui action input">
-                      <input id="send-amount" placeholder="Amount..." type="number">
-                      <button class="ui button" @click="maxAmount()">Max Amount</button>
-                    </div>
+                        <label>Amount (A .001 miner fee is deducted from your balance)</label>
+                        <div class="ui action input">
+                          <input id="send-amount" placeholder="Amount..." type="number">
+                          <button class="ui button" @click="maxAmount()">Max Amount</button>
+                        </div>
                     </div>
                     <div class="field">
-                    <label>Recipient Address</label>
-                    <input id="receive-address" placeholder="Address" type="text">
+                        <label>Recipient Address</label>
+                        <input id="receive-address" placeholder="Address" type="text">
                     </div>
                     <button :class="color" class="ui button" id="send-button" onclick="sendTransaction();">
                       Send

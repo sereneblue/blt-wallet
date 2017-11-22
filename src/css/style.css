@@ -5,7 +5,7 @@
     z-index: -1;
 }
 
-@media only screen and (min-width: 501px) {
+@media only screen and (min-width: 1025px) {
 	table {
 		padding: 2% 5% 0 5%;
 	}
@@ -52,7 +52,7 @@
 	}
 }
 
-@media only screen and (min-device-width : 501px) {
+@media only screen and (min-device-width : 1025px) {
 	table {
 		padding: 2% 5% 0 5%;
 	}

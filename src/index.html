@@ -85,9 +85,9 @@
 							<div class="header">
 								Faucets
 							</div>
-							<div class="item" :href="faucet[1]" v-for="faucet in faucets" target="_blank">
+							<a class="item" :href="faucet[1]" v-for="faucet in faucets" target="_blank">
 								{{ faucet[0] }}
-							</div>
+							</a>
 						</div>
 					</button>
 				</div>
@@ -130,8 +130,8 @@
 								<i class="medium circular inverted green arrow left icon"></i>
 								<i v-if="tx.confirmations < 1" class="medium hourglass start icon">
 							</td>
-							<td><span v-bind:data-livestamp="tx.time"></span></td>
-							<td><a v-bind:href="baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
+							<td><span :data-livestamp="tx.time"></span></td>
+							<td><a :href="baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
 							<td v-if="tx.vin[0].addr == address" class="negative">-{{ tx.vout[0].value }} {{ symbol }}</td>
 							<td v-else class="positive">+{{ getOutputValue(tx.vout) }} {{ symbol }}</td>
 						</tr>

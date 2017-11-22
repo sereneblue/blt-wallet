@@ -98,7 +98,15 @@
 		text-align: center;
 	}
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1024px) {
+
+	td {
+		max-width: 300px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
 	.pusher {
 		padding-left: 0px;
 	}
@@ -127,7 +135,15 @@
 	}
 }
 
-@media screen and (max-device-width: 768px) {
+@media screen and (max-device-width: 1024px) {
+
+	td {
+		max-width: 300px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
 	.pusher {
 		padding-left: 0px;
 	}

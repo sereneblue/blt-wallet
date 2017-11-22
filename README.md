@@ -6,7 +6,7 @@ An open source testnet web wallet for Bitcoin and Litecoin
 
 If you'd like to see blt-wallet in action, click [here](https://sereneblue.github.io/blt-wallet/). You can also save blt-wallet for local usage. Use the index.html file located in the `src` folder.
 
-Compatible with Android 7.0+ WebView.
+Compatible with Android 7.0+ WebView (Chrome v51) and Firefox Focus 2.3.
 
 ## Special Thanks
 

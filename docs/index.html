@@ -13,157 +13,161 @@
 </head>
 <body>
     <div id="app">
-        <div id="sidebar" class="ui sidebar inverted vertical menu visible">
-            <div class="item">
-                <br/>
-                <img class="ui centered image" src="https://rawgit.com/sereneblue/blt-wallet/master/src/resources/icon.png">
-                <div class="ui inverted centered header">BLT Wallet</div>
-            </div>
-            <div class="item">
-                <strong>What is BLT wallet?</strong>
+       <div id="sidebar" class="ui sidebar inverted vertical menu visible">
+           <div class="item">
+               <br/>
+               <img class="ui centered image" src="resources/icon.png">
+               <div class="ui inverted centered header">BLT Wallet</div>
+           </div>
+           <div class="item">
+               <strong>What is BLT wallet?</strong>
                <br/>A web wallet for easy access to Bitcoin and Litecoin testnets. Please bookmark this URL if you want to access the same wallet again.
-            </div>
-            <div class="item">
-                <div class="four ui buttons">
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="top left" @click="init(current)">
-                        <i class="plus icon"></i>
-                    </button>
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Switch Currency" @click="switchCurrency();">
-                        <i class="exchange icon"></i>
-                    </button>
-                    <button :class="color" class="ui basic top left pointing small dropdown icon button" data-tooltip="Change Fiat Currency">
-                        <i class="money icon"></i>
-                        <div class="menu">
-                            <div class="divider"></div>
-                            <div class="header">
-                                Fiat
-                            </div>
-                            <div class="item" v-for="symbol, code in currencies" @click="updateFiat(code)">
-                                {{ symbol }} {{ code }}
-                            </div>
-                        </div>
-                    </button>
-                    <a href="https://github.com/sereneblue/blt-wallet" :class="color" class="ui basic small icon button" data-tooltip="View Source" data-position="top right">
-                        <i class="github alternate icon"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="item">
-                Need some testnet coins?
-            </div>
-            <a class="item" :href="faucet[1]" v-for="faucet in faucets" target="_blank">
-                {{ faucet[0] }}
-            </a>
-        </div>
-        <div id="horizontal" class="ui inverted menu">
-            <div class="item">
-                <div class="ui inverted header">BLT Wallet</div>
-                <div class="ui four buttons">
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="bottom left" @click="init(current)">
-                        <i class="plus icon"></i>
-                    </button>
-                    <button :class="color" class="ui basic small icon button" data-tooltip="Switch Currency" data-position="bottom left" @click="switchCurrency();">
-                        <i class="exchange icon"></i>
-                    </button>
-                    <button :class="color" class="ui basic top left pointing small dropdown icon button" data-tooltip="Change Fiat Currency" data-position="bottom left">
-                        <i class="money icon"></i>
-                        <div class="menu">
-                            <div class="divider"></div>
-                            <div class="header">
-                                Fiat
-                            </div>
-                            <div class="item" v-for="symbol, code in currencies" @click="updateFiat(code)">
-                                {{ symbol }} {{ code }}
-                            </div>
-                        </div>
-                    </button>
-                    <button :class="color" class="ui basic top left pointing small dropdown icon button" data-tooltip="Get coins" data-position="bottom left">
-                        <i class="money icon"></i>
-                        <div class="menu">
-                            <div class="divider"></div>
-                            <div class="header">
-                                Faucets
-                            </div>
-                            <div class="item" :href="faucet[1]" v-for="faucet in faucets" target="_blank">
-                                {{ faucet[0] }}
-                            </div>
-                        </div>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="pusher">
-            <div class="ui inverted teal vertical masthead center aligned segment" id="price-header">
-                <div class="price">
-                    <h1>{{ amount }}</h1>
-                    <h2>{{ fiat_amount }}</h2>
-                    <button :class="color" class="ui button" @click="showModal()">
-                        <i class="send outline icon"></i>
-                        Send
-                    </button>
-                    <h3>Address: {{ address }}</h3>
-                </div>
-            </div>
-            <div class="ui center aligned container" id="transactions">
-                <h2>Transactions</h2>
-                <table class="ui very basic compact stackable table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Time</th>
-                            <th>Transaction ID</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="tx in transactions">
-                            <td v-if="tx.vin[0].addr == address">
-                                <i class="medium circular inverted red arrow right icon"></i>
-                                <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
-                            </td>
-                            <td v-else>
-                                <i class="medium circular inverted green arrow left icon"></i>
-                                <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
-                            </td>
-                            <td><span v-bind:data-livestamp="tx.time"></span></td>
-                            <td><a v-bind:href="baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
-                            <td v-if="tx.vin[0].addr == address" class="negative">-{{ tx.vout[0].value }} {{ symbol }}</td>
-                            <td v-else class="positive">+{{ getOutputValue(tx.vout) }} {{ symbol }}</td>
-                        </tr>
-                  </tbody>
-            </table>
-            </div>
-            <audio id="audio" src="resources/ding.wav" preload="auto"></audio>
-        </div>
-        <div class="ui modal">
-            <div class="header">Send Coins</div>
-            <div class="content">
-                <div class="ui form">
-                    <div class="field">
-                        <label>Amount (A .001 miner fee is deducted from your balance)</label>
-                        <div class="ui action input">
-                          <input id="send-amount" placeholder="Amount..." type="number">
-                          <button class="ui button" @click="maxAmount()">Max Amount</button>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label>Recipient Address</label>
-                        <input id="receive-address" placeholder="Address" type="text">
-                    </div>
-                    <button :class="color" class="ui button" id="send-button" onclick="sendTransaction();">
-                      Send
-                    </button>
-                    <button class="ui deny button" onclick="$('.modal').modal('hide');">
-                      Cancel
-                    </button>
-                    <div v-if="msg.title" :class="msg.status" class="ui message">
-                        <div class="header">{{ msg.title }}</div>
-                        <p>{{ msg.reason }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+           </div>
+           <div class="item">
+               <div class="four ui buttons">
+                   <button :class="color" class="ui basic small icon button" data-tooltip="Create new address" data-position="top left" @click="init(current)">
+                       <i class="plus icon"></i>
+                   </button>
+                   <button :class="color" class="ui basic small icon button" data-tooltip="Switch Currency" @click="switchCurrency();">
+                       <i class="exchange icon"></i>
+                   </button>
+                   <button :class="color" class="ui basic top left pointing small dropdown icon button" data-tooltip="Change Fiat Currency">
+                       <i class="money icon"></i>
+                       <div class="menu">
+                           <div class="divider"></div>
+                           <div class="header">
+                               Fiat
+                           </div>
+                           <div class="item" v-for="symbol, code in currencies" @click="updateFiat(code)">
+                               {{ symbol }} {{ code }}
+                           </div>
+                       </div>
+                   </button>
+                   <a href="https://github.com/sereneblue/blt-wallet" :class="color" class="ui basic small icon button" data-tooltip="View Source" data-position="top right">
+                       <i class="github alternate icon"></i>
+                   </a>
+               </div>
+           </div>
+           <div class="item">
+               Need some testnet coins?
+           </div>
+           <a class="item" :href="faucet[1]" v-for="faucet in faucets" target="_blank">
+               {{ faucet[0] }}
+           </a>
+       </div>
+       <div id="horizontal" class="ui inverted menu">
+           <div class="item">
+               <div class="ui inverted header">BLT Wallet</div>
+               <div class="ui four buttons">
+                   <button :class="color" class="ui basic medium icon button" data-tooltip="Create new address" data-position="bottom left" @click="init(current)">
+                       <i class="large plus icon"></i>
+                   </button>
+                   <button :class="color" class="ui basic medium icon button" data-tooltip="Switch Currency" data-position="bottom left" @click="switchCurrency();">
+                       <i class="large exchange icon"></i>
+                   </button>
+                   <button :class="color" class="ui basic top left pointing medium dropdown icon button" data-tooltip="Change Fiat Currency" data-position="bottom left">
+                       <i class="large money icon"></i>
+                       <div class="menu">
+                           <div class="divider"></div>
+                           <div class="header">
+                               Fiat
+                           </div>
+                           <div class="item" v-for="symbol, code in currencies" @click="updateFiat(code)">
+                               {{ symbol }} {{ code }}
+                           </div>
+                       </div>
+                   </button>
+                   <button :class="color" class="ui basic top left pointing medium dropdown icon button" data-tooltip="Get coins" data-position="bottom left">
+                       <i class="large external share icon"></i>
+                       <div class="menu">
+                           <div class="divider"></div>
+                           <div class="header">
+                               Faucets
+                           </div>
+                           <div class="item" :href="faucet[1]" v-for="faucet in faucets" target="_blank">
+                               {{ faucet[0] }}
+                           </div>
+                       </div>
+                   </button>
+               </div>
+           </div>
+       </div>
+       <div class="pusher">
+           <div class="ui inverted teal vertical masthead center aligned segment" id="price-header">
+               <div class="price">
+                   <h1>{{ amount }}</h1>
+                   <h2>{{ fiat_amount }}</h2>
+                   <button :class="color" class="ui button" @click="showModal()">
+                       <i class="send outline icon"></i>
+                       Send
+                   </button>
+                   <button :class="color" class="ui button" @click="copyAddress()">
+                       <i class="copy icon"></i>
+                       Copy Address
+                   </button>
+                   <h3>Address: {{ address }}</h3>
+               </div>
+           </div>
+           <div class="ui center aligned container" id="transactions">
+               <h2>Transactions</h2>
+               <table class="ui very basic compact stackable table">
+                   <thead>
+                       <tr>
+                           <th></th>
+                           <th>Time</th>
+                           <th>Transaction ID</th>
+                           <th>Amount</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       <tr v-for="tx in transactions">
+                           <td v-if="tx.vin[0].addr == address">
+                               <i class="medium circular inverted red arrow right icon"></i>
+                               <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
+                           </td>
+                           <td v-else>
+                               <i class="medium circular inverted green arrow left icon"></i>
+                               <i v-if="tx.confirmations < 1" class="medium hourglass start icon">
+                           </td>
+                           <td><span v-bind:data-livestamp="tx.time"></span></td>
+                           <td><a v-bind:href="baseURL + '/tx/' + tx.txid" target="_blank">{{ tx.txid }}</a></td>
+                           <td v-if="tx.vin[0].addr == address" class="negative">-{{ tx.vout[0].value }} {{ symbol }}</td>
+                           <td v-else class="positive">+{{ getOutputValue(tx.vout) }} {{ symbol }}</td>
+                       </tr>
+                 </tbody>
+           </table>
+           </div>
+           <audio id="audio" src="resources/ding.wav" preload="auto"></audio>
+       </div>
+       <div class="ui modal">
+           <div class="header">Send Coins</div>
+           <div class="content">
+               <div class="ui form">
+                   <div class="field">
+                       <label>Amount (A .001 miner fee is deducted from your balance)</label>
+                       <div class="ui action input">
+                         <input id="send-amount" placeholder="Amount..." type="number">
+                         <button class="ui button" @click="maxAmount()">Max Amount</button>
+                       </div>
+                   </div>
+                   <div class="field">
+                       <label>Recipient Address</label>
+                       <input id="receive-address" placeholder="Address" type="text">
+                   </div>
+                   <button :class="color" class="ui button" id="send-button" @click="sendTransaction()">
+                     Send
+                   </button>
+                   <button class="ui deny button" onclick="$('.modal').modal('hide');">
+                     Cancel
+                   </button>
+                   <div v-if="msg.title" :class="msg.status" class="ui message">
+                       <div class="header">{{ msg.title }}</div>
+                       <p>{{ msg.reason }}</p>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.min.js"></script>
 <script src="https://rawgit.com/sereneblue/blt-wallet/master/src/js/script.js"></script>

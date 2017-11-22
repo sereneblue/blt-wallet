@@ -61,13 +61,13 @@
 				<div class="ui inverted header">BLT Wallet</div>
 				<div class="ui four buttons">
 					<button :class="color" class="ui basic medium icon button" data-tooltip="Create new address" data-position="bottom left" @click="init(current)">
-						<i class="plus icon"></i>
+						<i class="large plus icon"></i>
 					</button>
 					<button :class="color" class="ui basic medium icon button" data-tooltip="Switch Currency" data-position="bottom left" @click="switchCurrency();">
-						<i class="exchange icon"></i>
+						<i class="large exchange icon"></i>
 					</button>
 					<button :class="color" class="ui basic top left pointing medium dropdown icon button" data-tooltip="Change Fiat Currency" data-position="bottom left">
-						<i class="money icon"></i>
+						<i class="large money icon"></i>
 						<div class="menu">
 							<div class="divider"></div>
 							<div class="header">
@@ -79,7 +79,7 @@
 						</div>
 					</button>
 					<button :class="color" class="ui basic top left pointing medium dropdown icon button" data-tooltip="Get coins" data-position="bottom left">
-						<i class="money icon"></i>
+						<i class="large external share icon"></i>
 						<div class="menu">
 							<div class="divider"></div>
 							<div class="header">
@@ -101,6 +101,10 @@
 					<button :class="color" class="ui button" @click="showModal()">
 						<i class="send outline icon"></i>
 						Send
+					</button>
+					<button :class="color" class="ui button" @click="copyAddress()">
+						<i class="copy icon"></i>
+						Copy Address
 					</button>
 					<h3>Address: {{ address }}</h3>
 				</div>

@@ -68,6 +68,7 @@ var app = new Vue({
 			    }
 			});
 
+
 			// check if there is enough balancekm
 			if (spend_amount < send_amount + fee) {
 				this.msg.status = "negative";
@@ -76,7 +77,6 @@ var app = new Vue({
 			} else {
 				tx.addOutput(recipient_address, send_amount * 100000000);
 			    tx.addOutput(this[this.current].address, parseFloat(((spend_amount - send_amount - fee) * 100000000).toFixed(0)));
-
 			    for (var i = 0; i < num_inputs; i++) {
 			    	tx.sign(i, keyPair);
 			    }
@@ -105,6 +105,20 @@ var app = new Vue({
 				}
 			}
 		},
+		copyAddress: function () {
+			var input = document.createElement('input');
+			input.setAttribute("id", "address");
+			input.setAttribute("class", "hidden");
+			input.setAttribute("value", this.address);
+			document.body.appendChild(input);
+
+			// copy address
+			document.getElementById('address').select();
+			document.execCommand('copy');
+
+			// remove element
+			input.remove();
+		},
 		getOutputValue: function (vouts) {
 			for (var i = 0; i < vouts.length; i++) {
 				if (vouts[i].scriptPubKey.addresses[0] == this.address) return vouts[i].value;
@@ -128,7 +142,7 @@ var app = new Vue({
 			}).done(function(res) {
 				if (res.txid) {
 					app.msg.status = "positive";
-					app.msg.title = "Transaction was successfully sent! Please wait for the walet to update.";
+					app.msg.title = "Transaction was successfully sent! Please wait for the wallet to update.";
 					app.msg.reason = "TXID: " + res.txid;
 				} else {
 					app.msg.status = "negative";
@@ -210,7 +224,7 @@ var app = new Vue({
 			return this[this.current].address;
 	    },
         amount: function () {
-			return this[this.current].amount + " " + this[this.current].symbol;
+			return this[this.current].amount + " t" + this[this.current].symbol;
 	    },
 	    baseURL: function () {
 	    	return app.symbol == "BTC" ? "https://test-insight.bitpay.com" : "https://testnet.litecore.io"

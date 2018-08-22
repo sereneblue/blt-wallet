@@ -112,7 +112,7 @@
 	}
 
 	#price-header {
-		height: 35vh;
+		height: 40vh;
 		display: flex;
 		justify-content: center;
 		flex-direction: column;
@@ -149,7 +149,7 @@
 	}
 
 	#price-header {
-		height: 35vh;
+		height: 40vh;
 		display: flex;
 		justify-content: center;
 		flex-direction: column;

@@ -53,11 +53,13 @@ var app = new Vue({
 			window.location.reload();
 		},
 		checkKey: function (priv_key) {
-			var keyPair = blt.ECPair.fromWIF(
-					priv_key,
-					(this.current == "bitcoin") ? blt.networks.testnet : blt.networks.ltestnet
-				);
-			var address = keyPair.getAddress();
+			var network = (this.current == "bitcoin") ? bitcoinjs.networks.testnet : bitcoinjs.networks.ltestnet
+
+			var keyPair = bitcoinjs.ECPair.fromWIF(priv_key, network);
+			var address = bitcoinjs.address.toBase58Check(
+				bitcoinjs.crypto.hash160(keyPair.publicKey),
+				network.pubKeyHash
+			)
 
 			if (window.location.hash[1] == "b") {
 				if (BLTWallet.checkValidAddress(address, 'bitcoin')) {
@@ -118,19 +120,29 @@ var app = new Vue({
 				body: new URLSearchParams(formData)
 			});
 
-			let data = await res.json();
+			if (res.ok) {
+				let data = await res.json();
 
-			app.msg = data.txid ? {
-				status:"positive",
-				title: "Transaction was successfully sent! Please wait for the wallet to update.",
-				reason: `TXID: ${data.txid}`
-			} : {
-				status: "negative",
-				title: "Could not send transaction",
-				reason: "Something went wrong. :("
+				app.msg = data.txid ? {
+					status:"positive",
+					title: "Transaction was successfully sent! Please wait for the wallet to update.",
+					reason: `TXID: ${data.txid}`
+				} : {
+					status: "negative",
+					title: "Could not send transaction",
+					reason: "Something went wrong. :("
+				}
+
+				if (data.txid) app.updateTransactions();
+			} else {
+				let data = await res.text();
+
+				app.msg = {
+					status:"negative",
+					title: "There was an error while sending your transaction.",
+					reason: data
+				}
 			}
-
-			if (data.txid) this.updateData();
 		},
 		sendTransaction: async () => {
 			var sendAmount = parseFloat($('#send-amount')[0].value);
@@ -139,11 +151,9 @@ var app = new Vue({
 			// check for valid testnet address
 			if (BLTWallet.checkValidAddress(recvAddress, app.current)) {
 				if (app[app.current].amount > 0 && sendAmount < app[app.current].amount) {
-					var keyPair = blt.ECPair.fromWIF(rot13(window.location.hash.match(/(b|l)\-([a-zA-Z0-9]+)(-([A-Z]{3}))?/)[2]),
-							app.current == "bitcoin" ? blt.networks.testnet : blt.networks.ltestnet
-						);
-					var tx = new blt.TransactionBuilder(app.current == "bitcoin" ? blt.networks.testnet : blt.networks.ltestnet);
-
+					var nw = app.current == "bitcoin" ? bitcoinjs.networks.testnet : bitcoinjs.networks.ltestnet;
+					var keyPair = bitcoinjs.ECPair.fromWIF(rot13(window.location.hash.match(/(b|l)\-([a-zA-Z0-9]+)(-([A-Z]{3}))?/)[2]), nw);
+					var tx = new bitcoinjs.TransactionBuilder(nw);
 					let res = await app.getUnspentTransactions(sendAmount, tx, keyPair);
 					var tx_hex = BLTWallet.buildTransaction(sendAmount, recvAddress, res, tx, keyPair);
 
@@ -261,20 +271,28 @@ let BLTWallet = {
 		return tx.buildIncomplete().toHex();
 	},
 	createNewAddress(network){
-		var network = network == "bitcoin" ? blt.networks.testnet : blt.networks.ltestnet;
-		var keyPair = blt.ECPair.makeRandom({ network: network });
-		var pkey = keyPair.toWIF();
-		var address = keyPair.getAddress();
-		return [pkey, address];
+		var nw = network == "bitcoin" ? bitcoinjs.networks.testnet : bitcoinjs.networks.ltestnet;
+		var keyPair = bitcoinjs.ECPair.makeRandom({ network: nw });
+		var address = bitcoinjs.address.toBase58Check(
+			bitcoinjs.crypto.hash160(keyPair.publicKey),
+			nw.pubKeyHash
+		)
+
+		return [keyPair.toWIF(), address];
 	},
 	checkValidAddress(address, network) {
 		try {
-			if (network == "bitcoin") {
-				return blt.address.fromBase58Check(address, blt.networks.testnet);
-			};
-			return blt.address.fromBase58Check(address, blt.networks.ltestnet);
+			return bitcoinjs.address.fromBase58Check(address, network == "bitcoin" ?
+				bitcoinjs.networks.testnet : bitcoinjs.networks.ltestnet
+			);
 		} catch(err) {
-			return false;
+			try {
+				return bitcoinjs.address.toOutputScript(address, network == "bitcoin" ?
+					bitcoinjs.networks.testnet : bitcoinjs.networks.ltestnet
+				);
+			} catch(err) {
+				return false;
+			}
 		}
 	}
 }
